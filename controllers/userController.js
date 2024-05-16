@@ -1,24 +1,9 @@
 const passport = require("passport");
 const asyncHandler = require("express-async-handler");
+const User = require("../models/User");
+const genPassword = require("../lib/passwordUtils").genPassword;
 
-exports.loginPost = passport.authenticate("local", {
-  successRedirect: "/login-success",
-  failureRedirect: "/login-failure",
-});
-
-exports.registerPost = asyncHandler(async (req, res, next) => {
-  // Implement your user registration logic here
-  // Assuming you have a User model and some logic to create a new user
-  // For example:
-  // const user = new User({ username: req.body.username });
-  // User.register(user, req.body.password, (err) => {
-  //   if (err) {
-  //     return next(err);
-  //   }
-  //   res.redirect("/login");
-  // });
-  res.redirect("/login");
-});
+//GET
 
 exports.index = asyncHandler(async (req, res, next) => {
   res.render("index", { title: "Home" });
@@ -61,4 +46,28 @@ exports.loginSuccessGet = asyncHandler(async (req, res, next) => {
 
 exports.loginFailureGet = asyncHandler(async (req, res, next) => {
   res.send("You entered the wrong password.");
+});
+
+//POST
+
+exports.loginPost = passport.authenticate("local", {
+  successRedirect: "/login-success",
+  failureRedirect: "/login-failure",
+});
+
+exports.registerPost = asyncHandler(async (req, res, next) => {
+  console.log(User.findOne());
+  const saltHash = genPassword(req.body.pw);
+
+  const salt = saltHash.salt;
+  const hash = saltHash.hash;
+
+  const newUser = new User({
+    email: req.body.email,
+    hash: hash,
+    salt: salt,
+  });
+
+  await newUser.save();
+  return res.redirect("/login");
 });

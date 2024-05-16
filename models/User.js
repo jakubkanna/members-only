@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: { type: String },
+  lastName: { type: String },
   email: {
     type: String,
     trim: true,
@@ -14,8 +14,7 @@ const UserSchema = new Schema({
     required: true,
   },
   username: { type: String, unique: true },
-  password: { type: String, required: true },
-  membership: Boolean,
+  membership: { type: Boolean, default: false },
   hash: String,
   salt: String,
   messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],

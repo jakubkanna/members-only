@@ -1,28 +1,43 @@
 //passport.js
+
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/User");
+const asyncHandler = require("express-async-handler");
+const validPassword = require("../lib/passwordUtils").validPassword;
 
 const customFields = {
-  usernameField: "uname",
+  usernameField: "email",
   passwordField: "pw",
 };
 
-const verifyCallback = (username, password, done) => {
-  User.findOne({ username: username })
-    .then((user) => {
-      if (!user) done(null, false);
+const verifyCallback = asyncHandler(async (username, password, done) => {
+  const user = await User.findOne({ username: username });
 
-      const isValid = validPassword(password, user.hash, user.salt);
+  if (!user) {
+    return done(null, false);
+  }
 
-      if (isValid) done(null, user);
-      else done(null, false);
-    })
-    .catch((err) => {
-      done(err);
-    });
-};
+  const isValid = validPassword(password, user.hash, user.salt);
+
+  if (isValid) {
+    return done(null, user);
+  } else {
+    return done(null, false);
+  }
+});
 
 const strategy = new LocalStrategy(customFields, verifyCallback);
 
 passport.use(strategy);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(
+  asyncHandler(async (userId, done) => {
+    const user = await User.findById(userId);
+    done(null, user);
+  })
+);

@@ -1,18 +1,21 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-// Initialize Express app
-const app = express();
-
-// Database connection
 const mongoDb = process.env.DB_STRING;
 mongoose.connect(mongoDb);
 const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error"));
+db.on("error", console.error.bind(console, "mongo connection error"));
+
+// Initialize Express app
+var app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Passport configuration
 require("./config/passport");
@@ -27,14 +30,24 @@ app.use(
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: process.env.DB_STRING }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
   })
 );
-app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use("/", require("./routes/index"));
+
+//remove later
+app.use((req, res, next) => {
+  console.log(req.session);
+  console.log(req.user);
+
+  next();
+});
 
 // Start server
 app.listen(3000, () => console.log(`App listening on port 3000!`));

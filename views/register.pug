@@ -4,10 +4,10 @@ block content
   h1 Register Page
   form(method="POST" action="/register")
     div
-      label(for="username") Enter Username:
-      input(type="text" name="username" required)
+      label(for="email") Enter Username (email):
+      input(type="email" id="email" name="email" required) 
     div
-      label(for="password") Enter Password:
-      input(type="password" name="password" required)
+      label(for="pw") Enter Password:
+      input(type="password" id="pw" name="pw" required) 
     div
       input(type="submit" value="Submit")
