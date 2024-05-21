@@ -1,5 +1,35 @@
 extends layout
 
 block content
-  h1 Home
-  p Please #[a(href="/register") register]
+  h1 #{title}
+
+  if isAuth
+    // Display messages
+    h2 Messages
+    ul.messageList
+      if messages.length
+        each message in messages
+          li.message
+            p= message.user.firstName + " " + message.user.lastName
+            p= message.user.username
+            p= message.timestamp.toLocaleString() 
+            p= message.text
+      else
+        p There are no messages.
+
+    h2 Message Box
+    if user.membership
+      // Form to create a new message
+      form(action="/" method="POST")
+
+        label(for="title") Title
+        input(type="text", name="title")
+
+        textarea(id="text" name="text" placeholder="Write something..." style="height:200px" required)
+
+        button(type="submit") Submit
+
+    else
+      b You need membership to create messages.
+  else
+    p Please login to see the message board.

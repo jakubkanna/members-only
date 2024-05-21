@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  firstName: { type: String },
-  lastName: { type: String },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   email: {
     type: String,
     trim: true,
@@ -17,11 +17,10 @@ const UserSchema = new Schema({
   membership: { type: Boolean, default: false },
   hash: String,
   salt: String,
-  messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
 });
 
 UserSchema.pre("save", function (next) {
-  this.username = this.email;
+  this.username = this.email.split("@")[0];
   next();
 });
 

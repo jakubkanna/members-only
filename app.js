@@ -5,6 +5,7 @@ const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const isAuth = require("./lib/isAuthMiddleware").isAuth;
 
 const mongoDb = process.env.DB_STRING;
 mongoose.connect(mongoDb);
@@ -16,6 +17,9 @@ var app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Set the 'public' folder to serve static files
+app.use(express.static(path.join(__dirname, "public")));
 
 // Passport configuration
 require("./config/passport");
@@ -36,18 +40,13 @@ app.use(
     },
   })
 );
+
 app.use(passport.session());
+
+app.use(isAuth);
 
 // Routes
 app.use("/", require("./routes/index"));
-
-//remove later
-app.use((req, res, next) => {
-  console.log(req.session);
-  console.log(req.user);
-
-  next();
-});
 
 // Start server
 app.listen(3000, () => console.log(`App listening on port 3000!`));

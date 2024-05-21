@@ -4,5 +4,25 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #00b7ff;
+}
+
+nav ul {
+  display: flex;
+  gap: 12px;
+}
+input {
+  width: 100%;
+}
+textarea {
+  width: 100%;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
