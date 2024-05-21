@@ -48,5 +48,5 @@ app.use(isAuth);
 // Routes
 app.use("/", require("./routes/index"));
 
-// Start server
-app.listen(3000, () => console.log(`App listening on port 3000!`));
+//
+module.exports = app;
